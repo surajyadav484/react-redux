@@ -1,4 +1,8 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import * as courseActions from "../../redux/actions/CourseActions";
+import PropType from "prop-types";
+import { bindActionCreators } from "redux";
 
 class CoursePage extends Component {
   constructor() {
@@ -18,7 +22,7 @@ class CoursePage extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    alert(this.state.courses.title);
+    this.props.actions.createCourse(this.state.courses);
   };
 
   render() {
@@ -33,10 +37,33 @@ class CoursePage extends Component {
             // value={this.state.courses.title}
           />
           <input type="submit" value="Save" />
+          {this.props.courses.map((course) => (
+            <div key={course.title}>{course.title}</div>
+          ))}
         </form>
       </>
     );
   }
 }
 
-export default CoursePage;
+CoursePage.PropType = {
+  courses: PropType.array.isRequired,
+  actions: PropType.object.isRequired,
+};
+
+function mapStateToProps(state) {
+  return {
+    courses: state.courses,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(courseActions, dispatch),
+  };
+}
+
+// export default connect(mapStateToProps, mapDispatchToProps)(CoursePage);
+// we can omit mapDispatchToProps in connect method as connect method by default passes mapDispatchToProps.
+
+export default connect(mapStateToProps, mapDispatchToProps)(CoursePage); //connect method returns a method, again calling that method with CoursesPage compoent hence using two parenthesis.
