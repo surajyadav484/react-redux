@@ -40,7 +40,6 @@ CoursePage.propTypes = {
 };
 
 function mapStateToProps(state) {
-  console.log(state);
   return {
     courses:
       state.authors.length === 0
