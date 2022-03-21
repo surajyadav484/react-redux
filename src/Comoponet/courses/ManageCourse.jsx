@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { loadAuthors } from "../../redux/actions/authorsActions";
-import { loadCourses } from "../../redux/actions/CourseActions";
+import { loadCourses, saveCourse } from "../../redux/actions/CourseActions";
 import PropType from "prop-types";
 import CourseForm from "./CourseForm";
 
@@ -10,12 +10,16 @@ const ManageCourse = ({
   authors,
   loadCourses,
   loadAuthors,
+  saveCourse,
+  history,
   ...props
 }) => {
   //..props -> other remaining properties
 
   const [course, setCourse] = useState({ ...props.course });
   const [error, setError] = useState();
+
+  console.log();
 
   useEffect(() => {
     if (courses.length === 0) {
@@ -30,9 +34,28 @@ const ManageCourse = ({
     }
   }, []);
 
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setCourse((prevState) => ({
+      ...prevState,
+      [name]: name === "authorId" ? parseInt(value) : value,
+    }));
+  }
+
+  function handleSave(e) {
+    e.preventDefault();
+    saveCourse(course).then(() => history.push("/courses"));
+  }
+
   return (
     <>
-      <CourseForm course={course} errors={error} authors={authors} />
+      <CourseForm
+        course={course}
+        errors={error}
+        authors={authors}
+        onChange={handleChange}
+        onSave={handleSave}
+      />
     </>
   );
 };
@@ -43,6 +66,8 @@ ManageCourse.propTypes = {
   authors: PropType.array.isRequired,
   loadAuthors: PropType.func.isRequired,
   loadCourses: PropType.func.isRequired,
+  saveCourse: PropType.func.isRequired,
+  history: PropType.object.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -61,6 +86,7 @@ const mapDispatchToProps = {
   /* since in above syntax left side and right side are the same names hence we can use Js short hand property  as below*/
   loadAuthors,
   loadCourses,
+  saveCourse,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ManageCourse);
