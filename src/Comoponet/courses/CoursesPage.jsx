@@ -6,6 +6,7 @@ import PropType from "prop-types";
 import { bindActionCreators } from "redux";
 import CourseList from "./CourseList.jsx";
 import { Redirect } from "react-router-dom";
+import Spinner from "../common/Spinner";
 
 class CoursePage extends Component {
   state = {
@@ -33,15 +34,20 @@ class CoursePage extends Component {
       <>
         {this.state.redirectToAddCoursePage && <Redirect to="/course" />}
         <h1>Courses</h1>
-
-        <button
-          style={{ marginBottom: 20 }}
-          className="btn btn-primary add-course"
-          onClick={() => this.setState({ redirectToAddCoursePage: true })}
-        >
-          Add Course
-        </button>
-        <CourseList courses={this.props.courses} />
+        {this.props.loading ? (
+          <Spinner />
+        ) : (
+          <>
+            <button
+              style={{ marginBottom: 20 }}
+              className="btn btn-primary add-course"
+              onClick={() => this.setState({ redirectToAddCoursePage: true })}
+            >
+              Add Course
+            </button>
+            <CourseList courses={this.props.courses} />
+          </>
+        )}
       </>
     );
   }
@@ -51,6 +57,7 @@ CoursePage.propTypes = {
   courses: PropType.array.isRequired,
   actions: PropType.object.isRequired,
   authors: PropType.array.isRequired,
+  loading: PropType.bool.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -66,6 +73,7 @@ function mapStateToProps(state) {
             };
           }),
     authors: state.authors,
+    loading: state.apiCallsInProgress > 0,
   };
 }
 
