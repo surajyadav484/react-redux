@@ -4,6 +4,7 @@ import { loadAuthors } from "../../redux/actions/authorsActions";
 import { loadCourses, saveCourse } from "../../redux/actions/CourseActions";
 import PropType from "prop-types";
 import CourseForm from "./CourseForm";
+import { newCourse } from "../../../tools/mockData";
 
 const ManageCourse = ({
   courses,
@@ -26,13 +27,15 @@ const ManageCourse = ({
       loadCourses().catch((error) =>
         alert("error while loading courses details" + error)
       );
+    } else {
+      setCourse({ ...props.course });
     }
     if (authors.length === 0) {
       loadAuthors().catch((error) =>
         alert("error while loading authors details" + error)
       );
     }
-  }, []);
+  }, [props.course]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -70,8 +73,20 @@ ManageCourse.propTypes = {
   history: PropType.object.isRequired,
 };
 
-function mapStateToProps(state) {
+export function getCourseById(courses, slug) {
+  return courses.find((course) => course.slug === slug) || null;
+}
+
+function mapStateToProps(state, ownProps) {
+  const slug = ownProps.match.params.slug;
+  console.log(slug);
+  const course =
+    slug && state.courses.length > 0
+      ? getCourseById(state.courses, slug)
+      : newCourse;
+
   return {
+    course,
     courses: state.courses,
     authors: state.authors,
   };
