@@ -20,7 +20,7 @@ const ManageCourse = ({
   //..props -> other remaining properties
 
   const [course, setCourse] = useState({ ...props.course });
-  const [error, setError] = useState();
+  const [error, setError] = useState({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -48,11 +48,25 @@ const ManageCourse = ({
 
   function handleSave(e) {
     e.preventDefault();
+    if (!isFormValid) return;
     setSaving(true);
     saveCourse(course).then(() => {
       toast.success("Course Saved.");
       history.push("/courses");
     });
+  }
+
+  function isFormValid() {
+    const { title, authorId, category } = course;
+    const error = {};
+    if (!title) error.title = "Title is required";
+    if (!authorId) error.title = "AuthorId is required";
+    if (!category) error.title = "Category is required";
+
+    setError(error);
+    //Form is valid if error object still has no properties
+
+    return Object.keys(error).length === 0;
   }
 
   return (
